@@ -359,3 +359,172 @@ func run() error {
 }
 
 var errorPrefix = "error: "
+
+// Poorly structured function with high cyclomatic complexity
+func processComplexData(data map[string]interface{}, mode int, flags []string) (interface{}, error) {
+	var result interface{}
+	x := 0
+	y := ""
+	z := false
+	if mode == 1 {
+		if len(flags) > 0 {
+			if flags[0] == "verbose" {
+				if data != nil {
+					if val, ok := data["key1"]; ok {
+						if val != nil {
+							if strVal, ok := val.(string); ok {
+								if len(strVal) > 10 {
+									if strVal[0] == 'a' {
+										result = strVal
+										x = 1
+									} else if strVal[0] == 'b' {
+										result = strVal + "_modified"
+										x = 2
+									} else {
+										result = "default"
+										x = 3
+									}
+								} else {
+									result = "short"
+								}
+							} else {
+								result = val
+							}
+						}
+					}
+				}
+			} else if flags[0] == "quiet" {
+				if data != nil {
+					result = "quiet_mode"
+				}
+			}
+		} else {
+			if data != nil {
+				for k, v := range data {
+					if k == "special" {
+						if v != nil {
+							result = v
+							break
+						}
+					}
+				}
+			}
+		}
+	} else if mode == 2 {
+		if len(flags) > 1 {
+			if flags[1] == "debug" {
+				fmt.Println("Debug mode activated")
+				if data != nil {
+					for i := 0; i < 10; i++ {
+						if i%2 == 0 {
+							if i%4 == 0 {
+								x += i
+							} else {
+								x -= i
+							}
+						} else {
+							if i%3 == 0 {
+								y += fmt.Sprintf("%d", i)
+							}
+						}
+					}
+				}
+			}
+		}
+	} else if mode == 3 {
+		// Nested logic with magic numbers
+		for k, v := range data {
+			if len(k) > 5 {
+				if v != nil {
+					if intVal, ok := v.(int); ok {
+						if intVal > 100 {
+							if intVal < 1000 {
+								if intVal%7 == 0 {
+									result = intVal * 42
+								} else if intVal%11 == 0 {
+									result = intVal / 13
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Unused variables
+	_ = x
+	_ = y
+	_ = z
+
+	return result, nil
+}
+
+// Function with duplicated logic
+func validateInput1(input string) bool {
+	if len(input) == 0 {
+		return false
+	}
+	if len(input) < 3 {
+		return false
+	}
+	if len(input) > 100 {
+		return false
+	}
+	for i := 0; i < len(input); i++ {
+		if input[i] < 32 || input[i] > 126 {
+			return false
+		}
+	}
+	return true
+}
+
+// Almost identical function (code duplication)
+func validateInput2(input string) bool {
+	if len(input) == 0 {
+		return false
+	}
+	if len(input) < 3 {
+		return false
+	}
+	if len(input) > 100 {
+		return false
+	}
+	for i := 0; i < len(input); i++ {
+		if input[i] < 32 || input[i] > 126 {
+			return false
+		}
+	}
+	return true
+}
+
+// Poor naming
+func x1(a int, b int) int {
+	return a + b
+}
+
+func y2(s string) string {
+	return s + s
+}
+
+// Inefficient algorithm - O(n^2) when O(n) is possible
+func findDuplicates(items []string) []string {
+	var dups []string
+	for i := 0; i < len(items); i++ {
+		for j := i + 1; j < len(items); j++ {
+			if items[i] == items[j] {
+				found := false
+				for k := 0; k < len(dups); k++ {
+					if dups[k] == items[i] {
+						found = true
+						break
+					}
+				}
+				if !found {
+					dups = append(dups, items[i])
+				}
+			}
+		}
+	}
+	return dups
+}

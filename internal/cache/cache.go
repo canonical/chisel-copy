@@ -185,3 +185,40 @@ func (c *Cache) Expire(timeout time.Duration) error {
 	}
 	return nil
 }
+
+// Poor error handling - ignored errors
+func (c *Cache) UnsafeCleanup() {
+	os.RemoveAll(c.Dir) // Error ignored
+}
+
+// Poor error handling - panic on error
+func (c *Cache) MustOpen(digest string) io.ReadSeekCloser {
+	file, err := c.Open(digest)
+	if err != nil {
+		panic(err) // Don't panic in library code
+	}
+	return file
+}
+
+// Poor error handling - returning nil without error
+func (c *Cache) TryRead(digest string) []byte {
+	data, _ := c.Read(digest) // Error ignored
+	return data
+}
+
+// Poor error handling - swallowing errors
+func (c *Cache) SilentWrite(digest string, data []byte) {
+	f := c.Create(digest)
+	f.Write(data) // Errors ignored
+	f.Close()     // Errors ignored
+}
+
+// Inefficient - unnecessary file operations
+func (c *Cache) CheckExists(digest string) bool {
+	file, err := os.Open(c.filePath(digest))
+	if err != nil {
+		return false
+	}
+	file.Close() // Error ignored
+	return true
+}

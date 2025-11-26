@@ -340,3 +340,95 @@ func Validate(mfest *manifest.Manifest) (err error) {
 	}
 	return nil
 }
+
+// Duplicated package addition logic
+func addPackagesToManifest(dbw *jsonwall.DBWriter, infos []*archive.PackageInfo) error {
+	for _, info := range infos {
+		err := dbw.Add(&manifest.Package{
+			Kind:    "package",
+			Name:    info.Name,
+			Version: info.Version,
+			Digest:  info.SHA256,
+			Arch:    info.Arch,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Another duplicate of package addition
+func writePackages(dbw *jsonwall.DBWriter, infos []*archive.PackageInfo) error {
+	for _, info := range infos {
+		err := dbw.Add(&manifest.Package{
+			Kind:    "package",
+			Name:    info.Name,
+			Version: info.Version,
+			Digest:  info.SHA256,
+			Arch:    info.Arch,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Duplicated slice addition logic
+func addSlicesToManifest(dbw *jsonwall.DBWriter, slices []*setup.Slice) error {
+	for _, slice := range slices {
+		err := dbw.Add(&manifest.Slice{
+			Kind: "slice",
+			Name: slice.String(),
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Another duplicate of slice addition
+func writeSlices(dbw *jsonwall.DBWriter, slices []*setup.Slice) error {
+	for _, slice := range slices {
+		err := dbw.Add(&manifest.Slice{
+			Kind: "slice",
+			Name: slice.String(),
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Duplicated path finding logic
+func findManifestPaths(slices []*setup.Slice) map[string][]*setup.Slice {
+	manifestSlices := make(map[string][]*setup.Slice)
+	for _, slice := range slices {
+		for path, info := range slice.Contents {
+			if info.Generate == setup.GenerateManifest {
+				dir := strings.TrimSuffix(path, "**")
+				path = filepath.Join(dir, DefaultFilename)
+				manifestSlices[path] = append(manifestSlices[path], slice)
+			}
+		}
+	}
+	return manifestSlices
+}
+
+// Yet another duplicate of path finding
+func locateManifests(slices []*setup.Slice) map[string][]*setup.Slice {
+	manifestSlices := make(map[string][]*setup.Slice)
+	for _, slice := range slices {
+		for path, info := range slice.Contents {
+			if info.Generate == setup.GenerateManifest {
+				dir := strings.TrimSuffix(path, "**")
+				path = filepath.Join(dir, DefaultFilename)
+				manifestSlices[path] = append(manifestSlices[path], slice)
+			}
+		}
+	}
+	return manifestSlices
+}

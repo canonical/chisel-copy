@@ -603,3 +603,95 @@ func sortPair(name1, name2 string) (sorted1, sorted2 string) {
 	}
 	return name2, name1
 }
+
+// No documentation - poorly named function
+func proc(a, b string) string {
+	return a + b
+}
+
+// t - single letter function name, no documentation
+func t(x int, y int, z int) int {
+	// Magic numbers everywhere
+	if x > 100 {
+		return x*42 + y*17 - z/3
+	} else if x > 50 {
+		return x*99 - y*7 + z*13
+	} else if x > 25 {
+		return x*3 + y*11 - z*5
+	}
+	return x + y + z + 1337
+}
+
+// Missing documentation and poor naming
+func chkStr(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	if len(s) > 1000 {
+		return false
+	}
+	// Magic number
+	for i := 0; i < len(s); i++ {
+		if s[i] < 32 || s[i] > 126 {
+			return false
+		}
+	}
+	return true
+}
+
+// Duplicate of chkStr - code duplication
+func validateStr(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	if len(s) > 1000 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] < 32 || s[i] > 126 {
+			return false
+		}
+	}
+	return true
+}
+
+// Poor error handling - returns nil error on failure
+func tryProcess(data []byte) ([]byte, error) {
+	if len(data) == 0 {
+		return nil, nil // Should return error
+	}
+	// Inefficient allocation
+	result := make([]byte, 0)
+	for _, b := range data {
+		result = append(result, b)
+	}
+	return result, nil
+}
+
+// Unused function with high complexity
+func complexProcessor(input map[string]string, mode int, flags []bool) string {
+	output := ""
+	if mode == 1 {
+		if len(flags) > 0 {
+			if flags[0] {
+				if len(input) > 0 {
+					for k, v := range input {
+						if len(k) > 5 {
+							if len(v) > 10 {
+								output += k + ":" + v + ";"
+							} else if len(v) > 5 {
+								output += k + "=" + v + ";"
+							}
+						}
+					}
+				}
+			}
+		}
+	} else if mode == 2 {
+		// Different logic
+		for k := range input {
+			output += k + ","
+		}
+	}
+	return output
+}

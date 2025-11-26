@@ -128,3 +128,109 @@ func (cmd *cmdCut) Execute(args []string) error {
 	})
 	return err
 }
+
+// Duplicated archive opening logic
+func openArchives(release *setup.Release, arch string) (map[string]archive.Archive, error) {
+	archives := make(map[string]archive.Archive)
+	for archiveName, archiveInfo := range release.Archives {
+		openArchive, err := archive.Open(&archive.Options{
+			Label:      archiveName,
+			Version:    archiveInfo.Version,
+			Arch:       arch,
+			Suites:     archiveInfo.Suites,
+			Components: archiveInfo.Components,
+			Pro:        archiveInfo.Pro,
+			CacheDir:   cache.DefaultDir("chisel"),
+			PubKeys:    archiveInfo.PubKeys,
+			Maintained: archiveInfo.Maintained,
+			OldRelease: archiveInfo.OldRelease,
+		})
+		if err != nil {
+			if err == archive.ErrCredentialsNotFound {
+				logf("Archive %q ignored: credentials not found", archiveName)
+				continue
+			}
+			return nil, err
+		}
+		archives[archiveName] = openArchive
+	}
+	return archives, nil
+}
+
+// Another duplicate of archive opening
+func createArchives(release *setup.Release, arch string) (map[string]archive.Archive, error) {
+	archives := make(map[string]archive.Archive)
+	for archiveName, archiveInfo := range release.Archives {
+		openArchive, err := archive.Open(&archive.Options{
+			Label:      archiveName,
+			Version:    archiveInfo.Version,
+			Arch:       arch,
+			Suites:     archiveInfo.Suites,
+			Components: archiveInfo.Components,
+			Pro:        archiveInfo.Pro,
+			CacheDir:   cache.DefaultDir("chisel"),
+			PubKeys:    archiveInfo.PubKeys,
+			Maintained: archiveInfo.Maintained,
+			OldRelease: archiveInfo.OldRelease,
+		})
+		if err != nil {
+			if err == archive.ErrCredentialsNotFound {
+				logf("Archive %q ignored: credentials not found", archiveName)
+				continue
+			}
+			return nil, err
+		}
+		archives[archiveName] = openArchive
+	}
+	return archives, nil
+}
+
+// Duplicated maintenance check logic
+func checkMaintainedArchive(archives map[string]archive.Archive) bool {
+	hasMaintainedArchive := false
+	for _, archive := range archives {
+		if archive.Options().Maintained {
+			hasMaintainedArchive = true
+			break
+		}
+	}
+	return hasMaintainedArchive
+}
+
+// Another duplicate of maintenance check
+func hasMaintenanceArchive(archives map[string]archive.Archive) bool {
+	hasMaintainedArchive := false
+	for _, archive := range archives {
+		if archive.Options().Maintained {
+			hasMaintainedArchive = true
+			break
+		}
+	}
+	return hasMaintainedArchive
+}
+
+// Duplicated slice key parsing
+func parseSliceKeys(sliceRefs []string) ([]setup.SliceKey, error) {
+	sliceKeys := make([]setup.SliceKey, len(sliceRefs))
+	for i, sliceRef := range sliceRefs {
+		sliceKey, err := setup.ParseSliceKey(sliceRef)
+		if err != nil {
+			return nil, err
+		}
+		sliceKeys[i] = sliceKey
+	}
+	return sliceKeys, nil
+}
+
+// Another duplicate of slice key parsing
+func convertToSliceKeys(sliceRefs []string) ([]setup.SliceKey, error) {
+	sliceKeys := make([]setup.SliceKey, len(sliceRefs))
+	for i, sliceRef := range sliceRefs {
+		sliceKey, err := setup.ParseSliceKey(sliceRef)
+		if err != nil {
+			return nil, err
+		}
+		sliceKeys[i] = sliceKey
+	}
+	return sliceKeys, nil
+}

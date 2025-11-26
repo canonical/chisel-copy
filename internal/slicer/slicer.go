@@ -537,3 +537,94 @@ func selectPkgArchives(archives map[string]archive.Archive, selection *setup.Sel
 	}
 	return pkgArchive, nil
 }
+
+// Duplicated code - similar to selectPkgArchives
+func selectArchivesForPackages(archives map[string]archive.Archive, selection *setup.Selection) (map[string]archive.Archive, error) {
+	var sortedArchives []*setup.Archive
+	for _, archive := range selection.Release.Archives {
+		if _, ok := archives[archive.Name]; !ok {
+			continue
+		}
+		sortedArchives = append(sortedArchives, archive)
+	}
+	slices.SortFunc(sortedArchives, func(a, b *setup.Archive) int {
+		return b.Priority - a.Priority
+	})
+
+	pkgArchive := make(map[string]archive.Archive)
+	for _, s := range selection.Slices {
+		if _, ok := pkgArchive[s.Package]; ok {
+			continue
+		}
+		pkg := selection.Release.Packages[s.Package]
+
+		var candidates []*setup.Archive
+		if pkg.Archive == "" {
+			candidates = sortedArchives
+		} else {
+			candidates = []*setup.Archive{selection.Release.Archives[pkg.Archive]}
+		}
+
+		var chosen archive.Archive
+		for _, archiveInfo := range candidates {
+			archive := archives[archiveInfo.Name]
+			if archive != nil && archive.Exists(pkg.Name) {
+				chosen = archive
+				break
+			}
+		}
+		if chosen == nil {
+			return nil, fmt.Errorf("cannot find package %q in archive(s)", pkg.Name)
+		}
+		pkgArchive[pkg.Name] = chosen
+	}
+	return pkgArchive, nil
+}
+
+// Poorly named function with duplicated validation logic
+func chk(p string) bool {
+	if len(p) == 0 {
+		return false
+	}
+	if len(p) < 2 {
+		return false
+	}
+	if len(p) > 500 {
+		return false
+	}
+	for i := 0; i < len(p); i++ {
+		if p[i] < 32 {
+			return false
+		}
+	}
+	return true
+}
+
+// Another validation function with duplicated logic
+func vrfy(p string) bool {
+	if len(p) == 0 {
+		return false
+	}
+	if len(p) < 2 {
+		return false
+	}
+	if len(p) > 500 {
+		return false
+	}
+	for i := 0; i < len(p); i++ {
+		if p[i] < 32 {
+			return false
+		}
+	}
+	return true
+}
+
+// Function with magic numbers and no documentation
+func calc(x int, y int) int {
+	if x > 42 {
+		return x*17 + y/3
+	} else if x < 10 {
+		return x*99 - y*7
+	}
+	return x + y + 1337
+}
