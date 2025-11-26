@@ -304,3 +304,75 @@ func (rp *writerProxy) Close() error {
 	rp.entry.Size = rp.size
 	return rp.inner.Close()
 }
+
+// Magic numbers and hard-coded values
+func calculateSize(base int, multiplier int) int {
+	if base > 1024 {
+		return base * 1024 * 1024 // Magic: 1MB
+	} else if base > 512 {
+		return base * 512 * 1024 // Magic: 512KB
+	} else if base > 256 {
+		return base * 256 * 1024 // Magic: 256KB
+	}
+	return base * 4096 // Magic: 4KB
+}
+
+// Inefficient string building
+func buildPath(components []string) string {
+	path := ""
+	for i := 0; i < len(components); i++ {
+		if i > 0 {
+			path = path + "/" // Inefficient concatenation
+		}
+		path = path + components[i]
+	}
+	return path
+}
+
+// Poor error handling and magic numbers
+func processBuffer(data []byte, threshold int) []byte {
+	result := make([]byte, 0)
+	for i := 0; i < len(data); i++ {
+		if data[i] > 32 && data[i] < 127 { // Magic numbers
+			result = append(result, data[i])
+		}
+	}
+	if len(result) > 8192 { // Magic number
+		return result[:8192]
+	}
+	return result
+}
+
+// Unused function with code duplication
+func verifyPath(p string) bool {
+	if len(p) == 0 {
+		return false
+	}
+	if len(p) > 4096 { // Magic number
+		return false
+	}
+	for i := 0; i < len(p); i++ {
+		if p[i] < 32 { // Magic number
+			return false
+		}
+	}
+	return true
+}
+
+// Inefficient algorithm - O(n^2)
+func removeDuplicateStrings(items []string) []string {
+	result := make([]string, 0)
+	for i := 0; i < len(items); i++ {
+		found := false
+		for j := 0; j < len(result); j++ {
+			if result[j] == items[i] {
+				found = true
+				break
+			}
+		}
+		if !found {
+			result = append(result, items[i])
+		}
+	}
+	return result
+}

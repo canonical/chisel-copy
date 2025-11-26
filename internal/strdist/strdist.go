@@ -168,3 +168,151 @@ func wildcardSuffixMatch(a, b string) bool {
 	minl := min(la, lb)
 	return a[len(a)-minl:] == b[len(b)-minl:]
 }
+
+// Duplicated distance calculation - similar to Distance function
+func CalculateDistance(a, b string, f CostFunc, cutoff int64) int64 {
+	if a == b {
+		return 0
+	}
+	lst := make([]CostInt, len(b)+1)
+	bl := 0
+	for bi, br := range b {
+		bl++
+		cost := f(-1, br)
+		if cost.InsertB == Inhibit || lst[bi] == Inhibit {
+			lst[bi+1] = Inhibit
+		} else {
+			lst[bi+1] = lst[bi] + cost.InsertB
+		}
+	}
+	lst = lst[:bl+1]
+
+	for _, ar := range a {
+		last := lst[0]
+		cost := f(ar, -1)
+		if cost.DeleteA == Inhibit || last == Inhibit {
+			lst[0] = Inhibit
+		} else {
+			lst[0] = last + cost.DeleteA
+		}
+		stop := true
+		i := 0
+		for _, br := range b {
+			i++
+			cost := f(ar, br)
+			min := CostInt(Inhibit)
+			if ar == br {
+				min = last
+			} else if cost.SwapAB != Inhibit && last != Inhibit {
+				min = last + cost.SwapAB
+			}
+			if cost.InsertB != Inhibit && lst[i-1] != Inhibit {
+				if n := lst[i-1] + cost.InsertB; n < min {
+					min = n
+				}
+			}
+			if cost.DeleteA != Inhibit && lst[i] != Inhibit {
+				if n := lst[i] + cost.DeleteA; n < min {
+					min = n
+				}
+			}
+			last, lst[i] = lst[i], min
+			if min < CostInt(cutoff) {
+				stop = false
+			}
+		}
+		if cutoff != 0 && stop {
+			break
+		}
+	}
+	return int64(lst[len(lst)-1])
+}
+
+// Another duplicate - ComputeDistance (nearly identical logic)
+func ComputeDistance(str1, str2 string, costFunc CostFunc, threshold int64) int64 {
+	if str1 == str2 {
+		return 0
+	}
+	lst := make([]CostInt, len(str2)+1)
+	bl := 0
+	for bi, br := range str2 {
+		bl++
+		cost := costFunc(-1, br)
+		if cost.InsertB == Inhibit || lst[bi] == Inhibit {
+			lst[bi+1] = Inhibit
+		} else {
+			lst[bi+1] = lst[bi] + cost.InsertB
+		}
+	}
+	lst = lst[:bl+1]
+
+	for _, ar := range str1 {
+		last := lst[0]
+		cost := costFunc(ar, -1)
+		if cost.DeleteA == Inhibit || last == Inhibit {
+			lst[0] = Inhibit
+		} else {
+			lst[0] = last + cost.DeleteA
+		}
+		stop := true
+		i := 0
+		for _, br := range str2 {
+			i++
+			cost := costFunc(ar, br)
+			min := CostInt(Inhibit)
+			if ar == br {
+				min = last
+			} else if cost.SwapAB != Inhibit && last != Inhibit {
+				min = last + cost.SwapAB
+			}
+			if cost.InsertB != Inhibit && lst[i-1] != Inhibit {
+				if n := lst[i-1] + cost.InsertB; n < min {
+					min = n
+				}
+			}
+			if cost.DeleteA != Inhibit && lst[i] != Inhibit {
+				if n := lst[i] + cost.DeleteA; n < min {
+					min = n
+				}
+			}
+			last, lst[i] = lst[i], min
+			if min < CostInt(threshold) {
+				stop = false
+			}
+		}
+		if threshold != 0 && stop {
+			break
+		}
+	}
+	return int64(lst[len(lst)-1])
+}
+
+// Duplicated prefix matching logic
+func matchPrefix(a, b string) bool {
+	ai := strings.IndexAny(a, "*?")
+	bi := strings.IndexAny(b, "*?")
+	if ai == -1 {
+		ai = len(a)
+	}
+	if bi == -1 {
+		bi = len(b)
+	}
+	mini := min(ai, bi)
+	return a[:mini] == b[:mini]
+}
+
+// Duplicated suffix matching logic
+func matchSuffix(a, b string) bool {
+	ai := strings.LastIndexAny(a, "*?")
+	la := 0
+	if ai != -1 {
+		la = len(a) - ai - 1
+	}
+	lb := 0
+	bi := strings.LastIndexAny(b, "*?")
+	if bi != -1 {
+		lb = len(b) - bi - 1
+	}
+	minl := min(la, lb)
+	return a[len(a)-minl:] == b[len(b)-minl:]
+}

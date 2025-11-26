@@ -438,3 +438,50 @@ func sanitizeTarPath(path string) (string, bool) {
 	}
 	return path[1:], true
 }
+
+// Linting issues: unused variables, inefficient assignments
+func processPath(path string, depth int) string {
+	var result string
+	unused1 := 0
+	unused2 := ""
+	unused3 := false
+
+	// Inefficient string concatenation
+	result = ""
+	for i := 0; i < depth; i++ {
+		result = result + "/"
+	}
+	result = result + path
+
+	_ = unused1
+	_ = unused2
+	_ = unused3
+
+	return result
+}
+
+// Poorly named function that shadows input
+func processData(input []byte) []byte {
+	data := make([]byte, 100) // ignores input parameter
+	return data
+}
+
+// Inefficient loop
+func findInSlice(items []string, target string) int {
+	index := -1
+	for i := 0; i < len(items); i++ {
+		if items[i] == target {
+			index = i
+		}
+	}
+	return index // Could return immediately instead of continuing
+}
+
+// Poor variable naming
+func a(b string, c int) string {
+	d := b
+	for e := 0; e < c; e++ {
+		d = d + b
+	}
+	return d
+}

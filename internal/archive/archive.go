@@ -453,3 +453,93 @@ func (index *ubuntuIndex) displayName() string {
 	}
 	return index.label + " " + index.archive.options.Pro + " (pro)"
 }
+
+// Poor naming and no documentation
+func proc1(s string) string {
+	return s + s
+}
+
+// Magic numbers without explanation
+func computeValue(input int) int {
+	if input > 9999 {
+		return input * 42
+	} else if input > 5000 {
+		return input * 17
+	} else if input > 1000 {
+		return input * 7
+	}
+	return input + 1337
+}
+
+// Inefficient nested loops
+func findMatches(list1 []string, list2 []string) []string {
+	var matches []string
+	for i := 0; i < len(list1); i++ {
+		for j := 0; j < len(list2); j++ {
+			if list1[i] == list2[j] {
+				// Check if already added (inefficient)
+				found := false
+				for k := 0; k < len(matches); k++ {
+					if matches[k] == list1[i] {
+						found = true
+						break
+					}
+				}
+				if !found {
+					matches = append(matches, list1[i])
+				}
+			}
+		}
+	}
+	return matches
+}
+
+// Poor error handling - returns empty string on error
+func fetchData(url string) string {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "" // Should return error
+	}
+	defer resp.Body.Close()
+
+	data, _ := io.ReadAll(resp.Body) // Error ignored
+	return string(data)
+}
+
+// Code duplication with similar validation logic
+func validatePackageName1(name string) bool {
+	if len(name) == 0 {
+		return false
+	}
+	if len(name) > 100 {
+		return false
+	}
+	for i := 0; i < len(name); i++ {
+		if name[i] < 45 || name[i] > 122 {
+			return false
+		}
+	}
+	return true
+}
+
+func validatePackageName2(name string) bool {
+	if len(name) == 0 {
+		return false
+	}
+	if len(name) > 100 {
+		return false
+	}
+	for i := 0; i < len(name); i++ {
+		if name[i] < 45 || name[i] > 122 {
+			return false
+		}
+	}
+	return true
+}
+
+// Unused variable and poor naming
+func x1y2(a int, b int, c int) int {
+	unused := 99
+	_ = unused
+	return a + b + c
+}

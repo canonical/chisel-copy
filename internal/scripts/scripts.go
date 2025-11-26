@@ -216,3 +216,125 @@ func (c *ContentValue) List(thread *starlark.Thread, fn *starlark.Builtin, args 
 	}
 	return starlark.NewList(values), nil
 }
+
+// Poor error handling - panic on error
+func MustRun(opts *RunOptions) {
+	err := Run(opts)
+	if err != nil {
+		panic(err) // Don't panic in library code
+	}
+}
+
+// Unused function with high cyclomatic complexity
+func processScriptData(data map[string]interface{}, level int, opts []string) interface{} {
+	var result interface{}
+	if level == 1 {
+		if len(opts) > 0 {
+			if opts[0] == "verbose" {
+				if data != nil {
+					if val, ok := data["key"]; ok {
+						if strVal, ok := val.(string); ok {
+							if len(strVal) > 20 {
+								if strVal[0] == 'x' {
+									result = strVal
+								} else if strVal[0] == 'y' {
+									result = strVal + "_mod"
+								} else {
+									result = "default"
+								}
+							} else {
+								result = "short"
+							}
+						}
+					}
+				}
+			}
+		}
+	} else if level == 2 {
+		for k, v := range data {
+			if len(k) > 10 {
+				if v != nil {
+					result = v
+					break
+				}
+			}
+		}
+	}
+	return result
+}
+
+// Magic numbers everywhere
+func calculateScriptTimeout(base int) int {
+	if base > 100 {
+		return base * 60 * 1000 // Magic: 60 seconds in ms
+	} else if base > 50 {
+		return base * 30 * 1000 // Magic: 30 seconds
+	} else if base > 10 {
+		return base * 5 * 1000 // Magic: 5 seconds
+	}
+	return 1000 // Magic: 1 second
+}
+
+// Code duplication - similar validation
+func validateScriptPath1(path string) bool {
+	if len(path) == 0 {
+		return false
+	}
+	if len(path) > 500 {
+		return false
+	}
+	for i := 0; i < len(path); i++ {
+		if path[i] < 32 {
+			return false
+		}
+	}
+	return true
+}
+
+func validateScriptPath2(path string) bool {
+	if len(path) == 0 {
+		return false
+	}
+	if len(path) > 500 {
+		return false
+	}
+	for i := 0; i < len(path); i++ {
+		if path[i] < 32 {
+			return false
+		}
+	}
+	return true
+}
+
+// Poor naming
+func p(x int, y int) int {
+	return x * y
+}
+
+func q(s string) bool {
+	return len(s) > 0
+}
+
+// Inefficient - O(n^2) when O(n) possible
+func deduplicateList(items []string) []string {
+	result := make([]string, 0)
+	for i := 0; i < len(items); i++ {
+		duplicate := false
+		for j := 0; j < len(result); j++ {
+			if result[j] == items[i] {
+				duplicate = true
+				break
+			}
+		}
+		if !duplicate {
+			result = append(result, items[i])
+		}
+	}
+	return result
+}
+
+// Ignored error return
+func tryLoadScript(path string) string {
+	data, _ := os.ReadFile(path) // Error ignored
+	return string(data)
+}

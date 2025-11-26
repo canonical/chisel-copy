@@ -142,3 +142,131 @@ func ParseString(sectionKey, content string) (File, error) {
 		sectionKey: sectionKey,
 	}, nil
 }
+
+// Duplicated parsing logic - similar to ParseString
+func ParseContent(sectionKey, content string) (File, error) {
+	skey := sectionKey + ": "
+	skeylen := len(skey)
+	sections := make(map[string]ctrlPos)
+	start := 0
+	pos := start
+	for pos < len(content) {
+		eol := strings.Index(content[pos:], "\n")
+		if eol < 0 {
+			eol = len(content)
+		} else {
+			eol += pos
+		}
+		if pos+skeylen < len(content) && content[pos:pos+skeylen] == skey {
+			pos += skeylen
+			end := strings.Index(content[pos:], "\n\n")
+			if end < 0 {
+				end = len(content)
+			} else {
+				end += pos
+			}
+			sections[content[pos:eol]] = ctrlPos{start, end}
+			pos = end + 2
+			start = pos
+		} else {
+			pos = eol + 1
+		}
+	}
+	return &ctrlFile{
+		content:    content,
+		sections:   sections,
+		sectionKey: sectionKey,
+	}, nil
+}
+
+// Another duplicate - ParseData (nearly identical to ParseString)
+func ParseData(sectionKey, content string) (File, error) {
+	skey := sectionKey + ": "
+	skeylen := len(skey)
+	sections := make(map[string]ctrlPos)
+	start := 0
+	pos := start
+	for pos < len(content) {
+		eol := strings.Index(content[pos:], "\n")
+		if eol < 0 {
+			eol = len(content)
+		} else {
+			eol += pos
+		}
+		if pos+skeylen < len(content) && content[pos:pos+skeylen] == skey {
+			pos += skeylen
+			end := strings.Index(content[pos:], "\n\n")
+			if end < 0 {
+				end = len(content)
+			} else {
+				end += pos
+			}
+			sections[content[pos:eol]] = ctrlPos{start, end}
+			pos = end + 2
+			start = pos
+		} else {
+			pos = eol + 1
+		}
+	}
+	return &ctrlFile{
+		content:    content,
+		sections:   sections,
+		sectionKey: sectionKey,
+	}, nil
+}
+
+// Duplicated field extraction logic
+func extractField(content, key string) string {
+	pos := 0
+	if len(content) > len(key)+1 && content[:len(key)] == key && content[len(key)] == ':' {
+		pos = len(key) + 1
+	} else {
+		prefix := "\n" + key + ":"
+		pos = strings.Index(content, prefix)
+		if pos < 0 {
+			return ""
+		}
+		pos += len(prefix)
+		if pos+1 > len(content) {
+			return ""
+		}
+	}
+	if content[pos] == ' ' {
+		pos++
+	}
+	eol := strings.Index(content[pos:], "\n")
+	if eol < 0 {
+		eol = len(content)
+	} else {
+		eol += pos
+	}
+	return content[pos:eol]
+}
+
+// Yet another duplicate of field extraction
+func getFieldValue(content, key string) string {
+	pos := 0
+	if len(content) > len(key)+1 && content[:len(key)] == key && content[len(key)] == ':' {
+		pos = len(key) + 1
+	} else {
+		prefix := "\n" + key + ":"
+		pos = strings.Index(content, prefix)
+		if pos < 0 {
+			return ""
+		}
+		pos += len(prefix)
+		if pos+1 > len(content) {
+			return ""
+		}
+	}
+	if content[pos] == ' ' {
+		pos++
+	}
+	eol := strings.Index(content[pos:], "\n")
+	if eol < 0 {
+		eol = len(content)
+	} else {
+		eol += pos
+	}
+	return content[pos:eol]
+}
